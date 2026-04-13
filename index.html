@@ -1,1 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="app-header-bar" role="banner">
+        <div class="brand-block">
+            <span class="brand-mark" aria-hidden="true">TM</span>
+            <div>
+                <p class="brand-kicker">Personal workspace</p>
+                <h1 class="brand-title">Task Manager</h1>
+            </div>
+        </div>
 
+        <div class="auth-actions" aria-label="User login actions">
+            <button id="theme-toggle" type="button" class="ghost-btn auth-btn" aria-pressed="false">Dark Mode</button>
+            <button id="login-button" type="button" class="ghost-btn auth-btn">Log in</button>
+            <button id="signup-button" type="button" class="auth-btn">Sign up</button>
+        </div>
+    </header>
+
+    <button id="sidebar-toggle" class="sidebar-toggle" type="button" aria-expanded="false" aria-controls="sidebar-drawer">Menu</button>
+
+    <aside id="sidebar-drawer" class="sidebar-drawer" aria-label="Task sidebar">
+        <div class="sidebar-header">
+            <div>
+                <p class="sidebar-kicker">Quick Hub</p>
+                <h2>More features</h2>
+            </div>
+            <button id="sidebar-close" class="ghost-btn sidebar-close" type="button">Close</button>
+        </div>
+
+        <div class="sidebar-stats">
+            <div class="stat-card">
+                <span class="stat-label">Total</span>
+                <strong id="stat-total">0</strong>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Pending</span>
+                <strong id="stat-pending">0</strong>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Completed</span>
+                <strong id="stat-completed">0</strong>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Due Today</span>
+                <strong id="stat-due-today">0</strong>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <p class="sidebar-section-title">Quick Actions</p>
+            <div class="sidebar-actions">
+                <button id="sidebar-mark-all" type="button">Mark All Complete</button>
+                <button id="sidebar-clear-completed" type="button">Clear Completed</button>
+                <button id="sidebar-show-overdue" type="button">Show Overdue</button>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <p class="sidebar-section-title">Jump To</p>
+            <div class="sidebar-actions">
+                <button type="button" class="sidebar-filter" data-sidebar-filter="all">All Tasks</button>
+                <button type="button" class="sidebar-filter" data-sidebar-filter="active">Active</button>
+                <button type="button" class="sidebar-filter" data-sidebar-filter="completed">Completed</button>
+                <button id="sidebar-focus-due" type="button">Due Soon</button>
+            </div>
+        </div>
+    </aside>
+
+    <div id="sidebar-overlay" class="sidebar-overlay" hidden></div>
+
+    <main class="app-shell">
+        <div class="main-layout">
+        <section class="task-card">
+            <header class="app-header">
+                <p class="eyebrow">Plan your day</p>
+                <h1>Task Manager</h1>
+                <p class="subtitle">Track what matters and finish one task at a time.</p>
+                <button id="sidebar-open-inline" type="button" class="ghost-btn inline-menu-btn">Open Quick Hub</button>
+            </header>
+
+            <form id="task-form" class="task-form" autocomplete="off">
+                <label for="task-input" class="sr-only">Task</label>
+                <input id="task-input" type="text" placeholder="Add a new task..." maxlength="140" required>
+                <label for="due-date-input" class="sr-only">Due Date</label>
+                <input id="due-date-input" type="date" aria-label="Due date">
+                <label for="priority-input" class="sr-only">Priority</label>
+                <select id="priority-input" aria-label="Priority">
+                    <option value="low">Low Priority</option>
+                    <option value="medium" selected>Medium Priority</option>
+                    <option value="high">High Priority</option>
+                </select>
+                <button type="submit">Add Task</button>
+            </form>
+
+            <section class="controls" aria-label="Task Controls">
+                <input id="search-input" type="text" placeholder="Search tasks..." maxlength="140">
+                <label for="sort-select" class="sr-only">Sort Tasks</label>
+                <select id="sort-select" aria-label="Sort tasks">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="priority">Priority</option>
+                    <option value="due-soon">Due Soon</option>
+                </select>
+                <div class="filters" role="group" aria-label="Filter tasks">
+                    <button type="button" class="filter-btn active" data-filter="all">All</button>
+                    <button type="button" class="filter-btn" data-filter="active">Active</button>
+                    <button type="button" class="filter-btn" data-filter="completed">Completed</button>
+                </div>
+            </section>
+
+            <ul id="task-list" class="task-list" aria-live="polite"></ul>
+
+            <footer class="task-footer">
+                <p id="task-count">0 tasks left</p>
+                <div class="footer-actions">
+                    <button id="mark-all-complete" type="button" class="ghost-btn">Mark All Complete</button>
+                    <button id="clear-completed" type="button" class="ghost-btn">Clear Completed</button>
+                </div>
+            </footer>
+        </section>
+
+        <aside class="right-panel" aria-label="Task insights and widgets">
+            <section class="panel-section panel-surface">
+                <h2 class="panel-title">Task Cards</h2>
+                <section class="dashboard-grid" aria-label="Quick task cards">
+                    <button type="button" class="dashboard-card active" data-dashboard-filter="all">
+                        <span class="dashboard-label">All Tasks</span>
+                        <strong id="dashboard-total">0</strong>
+                        <small>Everything in one place</small>
+                    </button>
+                    <button type="button" class="dashboard-card" data-dashboard-filter="overdue">
+                        <span class="dashboard-label">Overdue</span>
+                        <strong id="dashboard-overdue">0</strong>
+                        <small>Needs attention now</small>
+                    </button>
+                    <button type="button" class="dashboard-card" data-dashboard-filter="due-soon">
+                        <span class="dashboard-label">Due Soon</span>
+                        <strong id="dashboard-due-soon">0</strong>
+                        <small>Coming up next</small>
+                    </button>
+                    <button type="button" class="dashboard-card" data-dashboard-filter="high-priority">
+                        <span class="dashboard-label">High Priority</span>
+                        <strong id="dashboard-high">0</strong>
+                        <small>Top priority items</small>
+                    </button>
+                    <button type="button" class="dashboard-card" data-dashboard-filter="completed">
+                        <span class="dashboard-label">Completed</span>
+                        <strong id="dashboard-completed">0</strong>
+                        <small>Finished work</small>
+                    </button>
+                    <button type="button" class="dashboard-card" data-dashboard-filter="today">
+                        <span class="dashboard-label">Due Today</span>
+                        <strong id="dashboard-today">0</strong>
+                        <small>Ends today</small>
+                    </button>
+                </section>
+            </section>
+
+            <section class="panel-section panel-surface">
+                <h2 class="panel-title">Widgets</h2>
+                <section class="widgets-grid" aria-label="Task widgets">
+                    <article class="widget-card widget-progress">
+                        <div class="widget-head">
+                            <span class="widget-label">Progress</span>
+                            <strong id="widget-progress-percent">0%</strong>
+                        </div>
+                        <div class="progress-track" aria-hidden="true">
+                            <span id="widget-progress-fill" class="progress-fill"></span>
+                        </div>
+                        <p id="widget-progress-text" class="widget-copy">No tasks completed yet.</p>
+                    </article>
+
+                    <article class="widget-card">
+                        <span class="widget-label">Next Up</span>
+                        <strong id="widget-next-title">No upcoming task</strong>
+                        <p id="widget-next-meta" class="widget-copy">Add a due date to see your next deadline.</p>
+                    </article>
+
+                    <article class="widget-card widget-focus">
+                        <span class="widget-label">Focus</span>
+                        <strong id="widget-focus-title">Stay on track</strong>
+                        <p id="widget-focus-copy" class="widget-copy">Use quick actions to jump to urgent tasks.</p>
+                        <button id="widget-focus-button" type="button" class="ghost-btn widget-button">Focus Due Soon</button>
+                    </article>
+
+                    <article class="widget-card widget-mode">
+                        <span class="widget-label">View Mode</span>
+                        <strong>Compact Layout</strong>
+                        <p class="widget-copy">Tighten spacing for a denser task list.</p>
+                        <button id="widget-compact-toggle" type="button" class="ghost-btn widget-button">Enable Compact View</button>
+                    </article>
+                </section>
+            </section>
+        </aside>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
