@@ -17,6 +17,10 @@ const priorityPanel = document.getElementById("priority-panel");
 const priorityOptionButtons = document.querySelectorAll(".priority-option");
 const searchInput = document.getElementById("search-input");
 const sortSelect = document.getElementById("sort-select");
+const sortButton = document.getElementById("sort-button");
+const sortDisplay = document.getElementById("sort-display");
+const sortPanel = document.getElementById("sort-panel");
+const sortOptionButtons = document.querySelectorAll(".sort-option");
 const taskList = document.getElementById("task-list");
 const taskCount = document.getElementById("task-count");
 const clearCompletedBtn = document.getElementById("clear-completed");
@@ -66,6 +70,7 @@ let isDarkMode = loadThemePreference();
 let calendarViewDate = startOfToday();
 let isCalendarOpen = false;
 let isPriorityMenuOpen = false;
+let isSortMenuOpen = false;
 
 const PRIORITY_RANK = {
 	high: 3,
@@ -81,6 +86,7 @@ applyTheme(isDarkMode);
 updateDueDateDisplay();
 renderCalendar();
 updatePriorityDisplay();
+updateSortDisplay();
 
 taskForm.addEventListener("submit", (event) => {
 	event.preventDefault();
@@ -112,8 +118,23 @@ searchInput.addEventListener("input", () => {
 });
 
 sortSelect.addEventListener("change", () => {
-	sortMode = sortSelect.value;
-	renderTasks();
+	setSortMode(sortSelect.value);
+});
+
+sortButton.addEventListener("click", () => {
+	if (isSortMenuOpen) {
+		closeSortMenu();
+		return;
+	}
+
+	openSortMenu();
+});
+
+sortOptionButtons.forEach((button) => {
+	button.addEventListener("click", () => {
+		setSortMode(button.dataset.sort || "newest");
+		closeSortMenu();
+	});
 });
 
 dueDateButton.addEventListener("click", () => {
@@ -228,20 +249,16 @@ sidebarShowOverdue.addEventListener("click", () => {
 });
 
 sidebarFocusDue.addEventListener("click", () => {
-	sortMode = "due-soon";
-	sortSelect.value = "due-soon";
+	setSortMode("due-soon");
 	setActiveFilter("all");
 	setDashboardCardsActive("due-soon");
-	renderTasks();
 	setSidebarVisible(false);
 });
 
 widgetFocusButton.addEventListener("click", () => {
 	setActiveFilter("due-soon");
 	setDashboardCardsActive("due-soon");
-	sortMode = "due-soon";
-	sortSelect.value = "due-soon";
-	renderTasks();
+	setSortMode("due-soon");
 });
 
 widgetCompactToggle.addEventListener("click", () => {
@@ -282,6 +299,7 @@ sidebarOverlay.addEventListener("click", () => {
 	setSidebarVisible(false);
 	closeCalendar();
 	closePriorityMenu();
+	closeSortMenu();
 });
 
 document.addEventListener("keydown", (event) => {
@@ -289,6 +307,7 @@ document.addEventListener("keydown", (event) => {
 		setSidebarVisible(false);
 		closeCalendar();
 		closePriorityMenu();
+		closeSortMenu();
 	}
 });
 
@@ -304,6 +323,10 @@ document.addEventListener("click", (event) => {
 
 	if (!priorityPanel.contains(target) && !priorityButton.contains(target)) {
 		closePriorityMenu();
+	}
+
+	if (!sortPanel.contains(target) && !sortButton.contains(target)) {
+		closeSortMenu();
 	}
 });
 
@@ -457,6 +480,45 @@ function openPriorityMenu() {
 	priorityPanel.hidden = false;
 	priorityButton.setAttribute("aria-expanded", "true");
 	updatePriorityDisplay();
+}
+
+function updateSortDisplay() {
+	const labels = {
+		newest: "Newest First",
+		oldest: "Oldest First",
+		priority: "Priority",
+		"due-soon": "Due Soon",
+	};
+	const currentSort = sortSelect.value || sortMode || "newest";
+	sortDisplay.textContent = labels[currentSort] || labels.newest;
+	sortButton.setAttribute("aria-label", `Sort ${sortDisplay.textContent}`);
+	sortOptionButtons.forEach((button) => {
+		button.classList.toggle("is-selected", button.dataset.sort === currentSort);
+	});
+}
+
+function setSortMode(nextSortMode) {
+	sortMode = nextSortMode;
+	sortSelect.value = nextSortMode;
+	updateSortDisplay();
+	renderTasks();
+}
+
+function openSortMenu() {
+	isSortMenuOpen = true;
+	sortPanel.hidden = false;
+	sortButton.setAttribute("aria-expanded", "true");
+	updateSortDisplay();
+}
+
+function closeSortMenu() {
+	if (!isSortMenuOpen) {
+		return;
+	}
+
+	isSortMenuOpen = false;
+	sortPanel.hidden = true;
+	sortButton.setAttribute("aria-expanded", "false");
 }
 
 function closePriorityMenu() {

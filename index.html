@@ -134,13 +134,25 @@
 
             <section class="controls" aria-label="Task Controls">
                 <input id="search-input" type="text" placeholder="Search tasks..." maxlength="140">
-                <label for="sort-select" class="sr-only">Sort Tasks</label>
-                <select id="sort-select" aria-label="Sort tasks">
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="priority">Priority</option>
-                    <option value="due-soon">Due Soon</option>
-                </select>
+                <div class="sort-field">
+                    <label for="sort-select" class="sr-only">Sort Tasks</label>
+                    <button id="sort-button" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="sort-panel">
+                        <span id="sort-display">Newest First</span>
+                        <span class="sort-trigger-icon" aria-hidden="true">▾</span>
+                    </button>
+                    <select id="sort-select" aria-label="Sort tasks" hidden>
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="priority">Priority</option>
+                        <option value="due-soon">Due Soon</option>
+                    </select>
+                    <div id="sort-panel" class="sort-panel" hidden>
+                        <button type="button" class="sort-option" data-sort="newest">Newest First</button>
+                        <button type="button" class="sort-option" data-sort="oldest">Oldest First</button>
+                        <button type="button" class="sort-option" data-sort="priority">Priority</button>
+                        <button type="button" class="sort-option" data-sort="due-soon">Due Soon</button>
+                    </div>
+                </div>
                 <div class="filters" role="group" aria-label="Filter tasks">
                     <button type="button" class="filter-btn active" data-filter="all">All</button>
                     <button type="button" class="filter-btn" data-filter="active">Active</button>
