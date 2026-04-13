@@ -11,6 +11,10 @@ const calendarGrid = document.getElementById("calendar-grid");
 const calendarToday = document.getElementById("calendar-today");
 const calendarClear = document.getElementById("calendar-clear");
 const priorityInput = document.getElementById("priority-input");
+const priorityButton = document.getElementById("priority-button");
+const priorityDisplay = document.getElementById("priority-display");
+const priorityPanel = document.getElementById("priority-panel");
+const priorityOptionButtons = document.querySelectorAll(".priority-option");
 const searchInput = document.getElementById("search-input");
 const sortSelect = document.getElementById("sort-select");
 const taskList = document.getElementById("task-list");
@@ -61,6 +65,7 @@ let compactView = false;
 let isDarkMode = loadThemePreference();
 let calendarViewDate = startOfToday();
 let isCalendarOpen = false;
+let isPriorityMenuOpen = false;
 
 const PRIORITY_RANK = {
 	high: 3,
@@ -75,6 +80,7 @@ updateWidgets();
 applyTheme(isDarkMode);
 updateDueDateDisplay();
 renderCalendar();
+updatePriorityDisplay();
 
 taskForm.addEventListener("submit", (event) => {
 	event.preventDefault();
@@ -95,7 +101,7 @@ taskForm.addEventListener("submit", (event) => {
 
 	taskInput.value = "";
 	setDueDateValue("");
-	priorityInput.value = "medium";
+	setPriorityValue("medium");
 	saveTasks();
 	renderTasks();
 });
@@ -139,6 +145,22 @@ calendarToday.addEventListener("click", () => {
 calendarClear.addEventListener("click", () => {
 	setDueDateValue("");
 	closeCalendar();
+});
+
+priorityButton.addEventListener("click", () => {
+	if (isPriorityMenuOpen) {
+		closePriorityMenu();
+		return;
+	}
+
+	openPriorityMenu();
+});
+
+priorityOptionButtons.forEach((button) => {
+	button.addEventListener("click", () => {
+		setPriorityValue(button.dataset.priority || "medium");
+		closePriorityMenu();
+	});
 });
 
 calendarGrid.addEventListener("click", (event) => {
@@ -259,12 +281,14 @@ sidebarClose.addEventListener("click", () => {
 sidebarOverlay.addEventListener("click", () => {
 	setSidebarVisible(false);
 	closeCalendar();
+	closePriorityMenu();
 });
 
 document.addEventListener("keydown", (event) => {
 	if (event.key === "Escape") {
 		setSidebarVisible(false);
 		closeCalendar();
+		closePriorityMenu();
 	}
 });
 
@@ -276,6 +300,10 @@ document.addEventListener("click", (event) => {
 
 	if (!dueDatePanel.contains(target) && !dueDateButton.contains(target)) {
 		closeCalendar();
+	}
+
+	if (!priorityPanel.contains(target) && !priorityButton.contains(target)) {
+		closePriorityMenu();
 	}
 });
 
@@ -394,6 +422,11 @@ function setDueDateValue(dateValue) {
 	updateDueDateDisplay();
 }
 
+function setPriorityValue(priorityValue) {
+	priorityInput.value = priorityValue;
+	updatePriorityDisplay();
+}
+
 function updateDueDateDisplay() {
 	const dateValue = dueDateInput.value;
 	dueDateDisplay.textContent = dateValue ? formatDueDate(dateValue) : "Due Date";
@@ -403,6 +436,37 @@ function updateDueDateDisplay() {
 	} else {
 		dueDateButton.classList.remove("has-value");
 	}
+}
+
+function updatePriorityDisplay() {
+	const labels = {
+		low: "Low Priority",
+		medium: "Medium Priority",
+		high: "High Priority",
+	};
+	const currentPriority = priorityInput.value || "medium";
+	priorityDisplay.textContent = labels[currentPriority] || labels.medium;
+	priorityButton.setAttribute("aria-label", `Priority ${priorityDisplay.textContent}`);
+	priorityOptionButtons.forEach((button) => {
+		button.classList.toggle("is-selected", button.dataset.priority === currentPriority);
+	});
+}
+
+function openPriorityMenu() {
+	isPriorityMenuOpen = true;
+	priorityPanel.hidden = false;
+	priorityButton.setAttribute("aria-expanded", "true");
+	updatePriorityDisplay();
+}
+
+function closePriorityMenu() {
+	if (!isPriorityMenuOpen) {
+		return;
+	}
+
+	isPriorityMenuOpen = false;
+	priorityPanel.hidden = true;
+	priorityButton.setAttribute("aria-expanded", "false");
 }
 
 function openCalendar() {

@@ -117,11 +117,18 @@
                     </div>
                 </div>
                 <label for="priority-input" class="sr-only">Priority</label>
-                <select id="priority-input" aria-label="Priority">
-                    <option value="low">Low Priority</option>
-                    <option value="medium" selected>Medium Priority</option>
-                    <option value="high">High Priority</option>
-                </select>
+                <div class="priority-field">
+                    <button id="priority-button" type="button" class="priority-trigger" aria-haspopup="menu" aria-expanded="false" aria-controls="priority-panel">
+                        <span id="priority-display">Medium Priority</span>
+                        <span class="priority-trigger-icon" aria-hidden="true">▾</span>
+                    </button>
+                    <input id="priority-input" type="hidden" value="medium">
+                    <div id="priority-panel" class="priority-panel" hidden>
+                        <button type="button" class="priority-option" data-priority="low">Low Priority</button>
+                        <button type="button" class="priority-option" data-priority="medium">Medium Priority</button>
+                        <button type="button" class="priority-option" data-priority="high">High Priority</button>
+                    </div>
+                </div>
                 <button type="submit">Add Task</button>
             </form>
 

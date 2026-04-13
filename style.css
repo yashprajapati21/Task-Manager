@@ -761,7 +761,7 @@ select {
 }
 
 #due-date-button,
-#priority-input {
+#priority-button {
 	height: 100%;
 }
 
@@ -794,11 +794,97 @@ select {
 	min-width: 0;
 }
 
+.priority-field {
+	position: relative;
+	min-width: 0;
+}
+
 .calendar-trigger-icon {
 	font-size: 0.8rem;
 	line-height: 1;
 	color: var(--muted);
 	transform: translateY(-1px);
+}
+
+#priority-input {
+	display: none;
+}
+
+#priority-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	width: 100%;
+	border: 1px solid var(--line);
+	border-radius: 12px;
+	padding: 0.7rem 0.85rem;
+	background: #ffffff;
+	color: var(--text);
+	text-align: left;
+	box-shadow: none;
+}
+
+#priority-button:hover {
+	background: #f8fafc;
+}
+
+#priority-button:focus {
+	outline: 2px solid rgba(221, 107, 32, 0.25);
+	border-color: var(--accent);
+}
+
+.priority-trigger-icon {
+	font-size: 0.8rem;
+	line-height: 1;
+	color: var(--muted);
+	transform: translateY(-1px);
+}
+
+.priority-panel {
+	position: absolute;
+	top: calc(100% + 0.6rem);
+	left: 0;
+	z-index: 26;
+	width: 100%;
+	min-width: 180px;
+	padding: 0.45rem;
+	border: 1px solid rgba(217, 221, 227, 0.9);
+	border-radius: 18px;
+	background: rgba(255, 253, 248, 0.98);
+	backdrop-filter: blur(14px);
+	box-shadow: 0 18px 42px rgba(31, 41, 51, 0.16);
+	color: var(--text);
+	display: grid;
+	gap: 0.35rem;
+}
+
+.priority-panel[hidden] {
+	display: none;
+}
+
+.priority-option {
+	justify-content: flex-start;
+	width: 100%;
+	border-radius: 12px;
+	padding: 0.75rem 0.85rem;
+	background: transparent;
+	color: var(--text);
+	box-shadow: none;
+	text-align: left;
+	font-weight: 600;
+	border: 1px solid transparent;
+}
+
+.priority-option:hover {
+	background: rgba(221, 107, 32, 0.08);
+	border-color: rgba(221, 107, 32, 0.16);
+}
+
+.priority-option.is-selected {
+	background: var(--accent);
+	color: #fff;
+	border-color: var(--accent);
 }
 
 .calendar-panel {
@@ -932,15 +1018,19 @@ select {
 }
 
 body.dark-mode #due-date-button,
-body.dark-mode .calendar-panel {
+body.dark-mode #priority-button,
+body.dark-mode .calendar-panel,
+body.dark-mode .priority-panel {
 	background: #131c2d;
 	border-color: #2b374a;
 	color: var(--text);
 }
 
 body.dark-mode #due-date-button:hover,
+body.dark-mode #priority-button:hover,
 body.dark-mode .calendar-nav-btn:hover,
-body.dark-mode .calendar-day:hover {
+body.dark-mode .calendar-day:hover,
+body.dark-mode .priority-option:hover {
 	background: rgba(255, 255, 255, 0.08);
 }
 
@@ -953,6 +1043,12 @@ body.dark-mode .calendar-day.is-outside {
 }
 
 body.dark-mode .calendar-day.is-selected {
+	background: var(--accent);
+	border-color: var(--accent);
+	color: #111827;
+}
+
+body.dark-mode .priority-option.is-selected {
 	background: var(--accent);
 	border-color: var(--accent);
 	color: #111827;
