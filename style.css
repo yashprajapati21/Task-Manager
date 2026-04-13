@@ -732,7 +732,7 @@ h1 {
 
 .task-form {
 	display: grid;
-	grid-template-columns: minmax(220px, 1fr) 170px 180px auto;
+	grid-template-columns: minmax(220px, 1fr) 210px 180px auto;
 	gap: 0.6rem;
 	margin-bottom: 1rem;
 }
@@ -749,6 +749,217 @@ select {
 	border-radius: 10px;
 	padding: 0.7rem 0.85rem;
 	background: #ffffff;
+}
+
+#due-date-input,
+#priority-input {
+	border-radius: 12px;
+}
+
+#due-date-input {
+	display: none;
+}
+
+#due-date-button,
+#priority-input {
+	height: 100%;
+}
+
+#due-date-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	width: 100%;
+	border: 1px solid var(--line);
+	border-radius: 12px;
+	padding: 0.7rem 0.85rem;
+	background: #ffffff;
+	color: var(--muted);
+	text-align: left;
+	box-shadow: none;
+}
+
+#due-date-button:hover {
+	background: #f8fafc;
+}
+
+#due-date-button:focus {
+	outline: 2px solid rgba(221, 107, 32, 0.25);
+	border-color: var(--accent);
+}
+
+.calendar-field {
+	position: relative;
+	min-width: 0;
+}
+
+.calendar-trigger-icon {
+	font-size: 0.8rem;
+	line-height: 1;
+	color: var(--muted);
+	transform: translateY(-1px);
+}
+
+.calendar-panel {
+	position: absolute;
+	top: calc(100% + 0.6rem);
+	left: 0;
+	z-index: 25;
+	width: min(100vw - 2rem, 320px);
+	padding: 0.9rem;
+	border: 1px solid rgba(217, 221, 227, 0.9);
+	border-radius: 18px;
+	background: rgba(255, 253, 248, 0.98);
+	backdrop-filter: blur(14px);
+	box-shadow: 0 18px 42px rgba(31, 41, 51, 0.16);
+	color: var(--text);
+}
+
+.calendar-panel[hidden] {
+	display: none;
+}
+
+.calendar-panel-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	margin-bottom: 0.75rem;
+}
+
+.calendar-month-label {
+	font-weight: 700;
+	font-size: 0.95rem;
+	text-align: center;
+	flex: 1;
+}
+
+.calendar-nav-btn {
+	width: 34px;
+	height: 34px;
+	padding: 0;
+	border-radius: 10px;
+	background: #edf2f7;
+	color: var(--text);
+	flex: 0 0 auto;
+}
+
+.calendar-nav-btn:hover {
+	background: #e5ecf3;
+}
+
+.calendar-weekdays,
+.calendar-grid {
+	display: grid;
+	grid-template-columns: repeat(7, minmax(0, 1fr));
+	gap: 0.35rem;
+}
+
+.calendar-weekdays {
+	margin-bottom: 0.45rem;
+	font-size: 0.7rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--muted);
+}
+
+.calendar-weekdays span,
+.calendar-day {
+	display: grid;
+	place-items: center;
+	min-height: 34px;
+	border-radius: 10px;
+}
+
+.calendar-day {
+	border: 1px solid transparent;
+	background: transparent;
+	color: var(--text);
+	padding: 0;
+	font-size: 0.9rem;
+}
+
+.calendar-day:hover {
+	background: rgba(221, 107, 32, 0.08);
+	border-color: rgba(221, 107, 32, 0.18);
+}
+
+.calendar-day.is-outside {
+	color: #a1aab6;
+	opacity: 0.65;
+}
+
+.calendar-day.is-selected {
+	background: var(--accent);
+	color: #fff;
+	border-color: var(--accent);
+	box-shadow: 0 10px 18px rgba(221, 107, 32, 0.18);
+}
+
+.calendar-day.is-today {
+	border-color: rgba(221, 107, 32, 0.32);
+}
+
+.calendar-actions {
+	display: flex;
+	justify-content: space-between;
+	gap: 0.6rem;
+	margin-top: 0.85rem;
+}
+
+.calendar-actions .ghost-btn {
+	flex: 1;
+	justify-content: center;
+}
+
+#priority-input {
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	padding-right: 2.2rem;
+	background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+		linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+	background-position: calc(100% - 1.4rem) 52%, calc(100% - 1.2rem) 52%;
+	background-size: 6px 6px, 6px 6px;
+	background-repeat: no-repeat;
+}
+
+#due-date-input::-webkit-calendar-picker-indicator {
+	opacity: 0.7;
+	cursor: pointer;
+}
+
+body.dark-mode #due-date-button,
+body.dark-mode .calendar-panel {
+	background: #131c2d;
+	border-color: #2b374a;
+	color: var(--text);
+}
+
+body.dark-mode #due-date-button:hover,
+body.dark-mode .calendar-nav-btn:hover,
+body.dark-mode .calendar-day:hover {
+	background: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .calendar-panel {
+	box-shadow: 0 18px 42px rgba(0, 0, 0, 0.35);
+}
+
+body.dark-mode .calendar-day.is-outside {
+	color: #7f91a8;
+}
+
+body.dark-mode .calendar-day.is-selected {
+	background: var(--accent);
+	border-color: var(--accent);
+	color: #111827;
+}
+
+body.dark-mode .calendar-day.is-today {
+	border-color: rgba(245, 158, 11, 0.45);
 }
 
 input:focus,

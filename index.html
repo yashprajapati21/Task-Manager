@@ -88,8 +88,34 @@
             <form id="task-form" class="task-form" autocomplete="off">
                 <label for="task-input" class="sr-only">Task</label>
                 <input id="task-input" type="text" placeholder="Add a new task..." maxlength="140" required>
-                <label for="due-date-input" class="sr-only">Due Date</label>
-                <input id="due-date-input" type="date" aria-label="Due date">
+                <div class="calendar-field">
+                    <button id="due-date-button" type="button" class="calendar-trigger" aria-haspopup="dialog" aria-expanded="false" aria-controls="due-date-panel">
+                        <span id="due-date-display">Due Date</span>
+                        <span class="calendar-trigger-icon" aria-hidden="true">▾</span>
+                    </button>
+                    <input id="due-date-input" type="hidden">
+                    <div id="due-date-panel" class="calendar-panel" hidden>
+                        <div class="calendar-panel-header">
+                            <button id="calendar-prev" type="button" class="calendar-nav-btn" aria-label="Previous month">‹</button>
+                            <div id="calendar-month-label" class="calendar-month-label"></div>
+                            <button id="calendar-next" type="button" class="calendar-nav-btn" aria-label="Next month">›</button>
+                        </div>
+                        <div class="calendar-weekdays" aria-hidden="true">
+                            <span>Sun</span>
+                            <span>Mon</span>
+                            <span>Tue</span>
+                            <span>Wed</span>
+                            <span>Thu</span>
+                            <span>Fri</span>
+                            <span>Sat</span>
+                        </div>
+                        <div id="calendar-grid" class="calendar-grid" role="grid" aria-label="Calendar days"></div>
+                        <div class="calendar-actions">
+                            <button id="calendar-today" type="button" class="ghost-btn">Today</button>
+                            <button id="calendar-clear" type="button" class="ghost-btn">Clear</button>
+                        </div>
+                    </div>
+                </div>
                 <label for="priority-input" class="sr-only">Priority</label>
                 <select id="priority-input" aria-label="Priority">
                     <option value="low">Low Priority</option>

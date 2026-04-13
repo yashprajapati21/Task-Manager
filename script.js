@@ -1,6 +1,15 @@
 const taskForm = document.getElementById("task-form");
 const taskInput = document.getElementById("task-input");
 const dueDateInput = document.getElementById("due-date-input");
+const dueDateButton = document.getElementById("due-date-button");
+const dueDateDisplay = document.getElementById("due-date-display");
+const dueDatePanel = document.getElementById("due-date-panel");
+const calendarPrev = document.getElementById("calendar-prev");
+const calendarNext = document.getElementById("calendar-next");
+const calendarMonthLabel = document.getElementById("calendar-month-label");
+const calendarGrid = document.getElementById("calendar-grid");
+const calendarToday = document.getElementById("calendar-today");
+const calendarClear = document.getElementById("calendar-clear");
 const priorityInput = document.getElementById("priority-input");
 const searchInput = document.getElementById("search-input");
 const sortSelect = document.getElementById("sort-select");
@@ -50,6 +59,8 @@ let searchQuery = "";
 let sortMode = "newest";
 let compactView = false;
 let isDarkMode = loadThemePreference();
+let calendarViewDate = startOfToday();
+let isCalendarOpen = false;
 
 const PRIORITY_RANK = {
 	high: 3,
@@ -62,6 +73,8 @@ setSidebarVisible(false);
 setDashboardCardsActive("all");
 updateWidgets();
 applyTheme(isDarkMode);
+updateDueDateDisplay();
+renderCalendar();
 
 taskForm.addEventListener("submit", (event) => {
 	event.preventDefault();
@@ -81,7 +94,7 @@ taskForm.addEventListener("submit", (event) => {
 	});
 
 	taskInput.value = "";
-	dueDateInput.value = "";
+	setDueDateValue("");
 	priorityInput.value = "medium";
 	saveTasks();
 	renderTasks();
@@ -95,6 +108,53 @@ searchInput.addEventListener("input", () => {
 sortSelect.addEventListener("change", () => {
 	sortMode = sortSelect.value;
 	renderTasks();
+});
+
+dueDateButton.addEventListener("click", () => {
+	if (isCalendarOpen) {
+		closeCalendar();
+		return;
+	}
+
+	openCalendar();
+});
+
+calendarPrev.addEventListener("click", () => {
+	calendarViewDate = new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() - 1, 1);
+	renderCalendar();
+});
+
+calendarNext.addEventListener("click", () => {
+	calendarViewDate = new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() + 1, 1);
+	renderCalendar();
+});
+
+calendarToday.addEventListener("click", () => {
+	setDueDateValue(toDateValue(startOfToday()));
+	calendarViewDate = startOfToday();
+	renderCalendar();
+	closeCalendar();
+});
+
+calendarClear.addEventListener("click", () => {
+	setDueDateValue("");
+	closeCalendar();
+});
+
+calendarGrid.addEventListener("click", (event) => {
+	const target = event.target;
+	if (!(target instanceof HTMLButtonElement)) {
+		return;
+	}
+
+	if (!target.dataset.date) {
+		return;
+	}
+
+	setDueDateValue(target.dataset.date);
+	calendarViewDate = parseTaskDate(target.dataset.date) || startOfToday();
+	renderCalendar();
+	closeCalendar();
 });
 
 filterButtons.forEach((button) => {
@@ -198,11 +258,24 @@ sidebarClose.addEventListener("click", () => {
 
 sidebarOverlay.addEventListener("click", () => {
 	setSidebarVisible(false);
+	closeCalendar();
 });
 
 document.addEventListener("keydown", (event) => {
 	if (event.key === "Escape") {
 		setSidebarVisible(false);
+		closeCalendar();
+	}
+});
+
+document.addEventListener("click", (event) => {
+	const target = event.target;
+	if (!(target instanceof Node)) {
+		return;
+	}
+
+	if (!dueDatePanel.contains(target) && !dueDateButton.contains(target)) {
+		closeCalendar();
 	}
 });
 
@@ -314,6 +387,41 @@ function loadTasks() {
 
 function saveTasks() {
 	localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+}
+
+function setDueDateValue(dateValue) {
+	dueDateInput.value = dateValue;
+	updateDueDateDisplay();
+}
+
+function updateDueDateDisplay() {
+	const dateValue = dueDateInput.value;
+	dueDateDisplay.textContent = dateValue ? formatDueDate(dateValue) : "Due Date";
+	dueDateButton.setAttribute("aria-label", dateValue ? `Due date ${formatDueDate(dateValue)}` : "Choose due date");
+	if (dateValue) {
+		dueDateButton.classList.add("has-value");
+	} else {
+		dueDateButton.classList.remove("has-value");
+	}
+}
+
+function openCalendar() {
+	isCalendarOpen = true;
+	dueDatePanel.hidden = false;
+	dueDateButton.setAttribute("aria-expanded", "true");
+	const currentValue = parseTaskDate(dueDateInput.value);
+	calendarViewDate = currentValue || startOfToday();
+	renderCalendar();
+}
+
+function closeCalendar() {
+	if (!isCalendarOpen) {
+		return;
+	}
+
+	isCalendarOpen = false;
+	dueDatePanel.hidden = true;
+	dueDateButton.setAttribute("aria-expanded", "false");
 }
 
 function loadThemePreference() {
@@ -567,6 +675,63 @@ function startOfToday() {
 	const today = new Date();
 	today.setHours(0, 0, 0, 0);
 	return today;
+}
+
+function toDateValue(date) {
+	const year = date.getFullYear();
+	const month = String(date.getMonth() + 1).padStart(2, "0");
+	const day = String(date.getDate()).padStart(2, "0");
+	return `${year}-${month}-${day}`;
+}
+
+function renderCalendar() {
+	const year = calendarViewDate.getFullYear();
+	const month = calendarViewDate.getMonth();
+	const firstDay = new Date(year, month, 1);
+	const startDate = new Date(firstDay);
+	startDate.setDate(startDate.getDate() - startDate.getDay());
+	const selectedDate = dueDateInput.value;
+	const todayValue = toDateValue(startOfToday());
+
+	calendarMonthLabel.textContent = firstDay.toLocaleDateString(undefined, {
+		month: "long",
+		year: "numeric",
+	});
+
+	calendarGrid.innerHTML = "";
+
+	for (let index = 0; index < 42; index += 1) {
+		const day = new Date(startDate);
+		day.setDate(startDate.getDate() + index);
+		const dateValue = toDateValue(day);
+		const button = document.createElement("button");
+		button.type = "button";
+		button.className = "calendar-day";
+		button.textContent = String(day.getDate());
+		button.dataset.date = dateValue;
+		button.setAttribute("role", "gridcell");
+		button.setAttribute("aria-label", day.toLocaleDateString(undefined, {
+			weekday: "long",
+			month: "long",
+			day: "numeric",
+			year: "numeric",
+		}));
+
+		if (day.getMonth() !== month) {
+			button.classList.add("is-outside");
+		}
+
+		if (dateValue === selectedDate) {
+			button.classList.add("is-selected");
+			button.setAttribute("aria-selected", "true");
+		}
+
+		if (dateValue === todayValue) {
+			button.classList.add("is-today");
+		}
+
+		calendarGrid.appendChild(button);
+	}
 }
 
 function parseTaskDate(dateValue) {
